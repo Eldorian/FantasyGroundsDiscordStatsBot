@@ -15,25 +15,27 @@ def parse_chatlog():
         html_content = f.read()
 
     soup = BeautifulSoup(html_content, 'html.parser')
-    
-    # Find all the <a> tags that represent session start dates
-    session_start_tags = soup.find_all('a', {'name': True})
-    
-    # Find the session start date that matches or is closest to the specified start_date
-    target_date = datetime.strptime(startdate, '%Y-%m-%d')
-    closest_date = min(session_start_tags, key=lambda tag: abs(datetime.strptime(tag['name'], '%Y-%m-%d') - target_date))['name']
-    
-    # Find the next sibling of the closest date tag and extract its content along with all the following siblings
-    log_content = []
-    log_tag = soup.find('a', {'name': closest_date}).find_next_sibling()
-    while log_tag:
-        log_content.append(str(log_tag))
-        log_tag = log_tag.find_next_sibling()
-    
-    parsed_content = ''.join(log_content)
-    parsed_soup = BeautifulSoup(parsed_content, 'html.parser')
 
-    return parsed_soup
+    # Find the session start tag that matches or is closest to the specified date
+    target_date = datetime.strptime("2022-06-30", '%Y-%m-%d')
+    session_start_tags = soup.find_all('a', {'name': True})
+    closest_date_tag = None
+    for tag in session_start_tags:
+        session_date = datetime.strptime(tag['name'], '%Y-%m-%d')
+        if session_date >= target_date:
+            closest_date_tag = tag
+            break
+
+    # Remove all elements preceding the closest date tag
+    if closest_date_tag:
+        previous_elements = closest_date_tag.find_all_previous()
+        for element in previous_elements:
+            element.extract()
+
+    # Get the original HTML content of the remaining soup
+    parsed_html = str(soup)
+
+    return parsed_html
 
 
 def count_player_attacks(playerName):
@@ -56,15 +58,15 @@ def count_player_initiatives(playerName):
 
     pattern = re.compile(r'\[[a-z]\d+(?:\+\d+)? = (\d+)', re.IGNORECASE)
     
-    with open(logfile_path, 'r') as log_file:
-        for line in log_file:
-            if re.search(r'<font color="#FDFDFD">{}: \[INIT\]'.format(re.escape(playerName)), line, re.IGNORECASE):
-                match = pattern.search(line)
-                if match:
-                    initiative_value = match.group(1)
-                    if is_valid_initiative(initiative_value):
-                        initiative_count += 1
-                        total_initiative += int(initiative_value)
+    parsed_text = parse_chatlog()
+    for line in parsed_text.splitlines():
+        if re.search(r'<font color="#FDFDFD">{}: \[INIT\]'.format(re.escape(playerName)), line, re.IGNORECASE):
+            match = pattern.search(line)
+            if match:
+                initiative_value = match.group(1)
+                if is_valid_initiative(initiative_value):
+                    initiative_count += 1
+                    total_initiative += int(initiative_value)
     average_initiative = total_initiative / initiative_count if initiative_count > 0 else 0
     average_initiative = math.floor(average_initiative)
 
