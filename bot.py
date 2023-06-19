@@ -40,8 +40,8 @@ async def attacks(interaction: discord.Interaction, playerName: str):
 @app_commands.describe(playerName="The name of the player to get the attacks of.")
 async def initiative(interaction: discord.Interaction, playerName: str):
     """Gives stats of the player inputted"""
-    actions_count = count_player_initiatives(playerName)
-    await interaction.response.send_message(f"{playerName} has rolled initiave {actions_count} total times.")
+    actions_count, average_init = count_player_initiatives(playerName)
+    await interaction.response.send_message(f"{playerName} has rolled initiave {actions_count} total times. They have an average initiative roll of {average_init}.")
 
 @client.tree.command()
 @app_commands.rename(playerName='text')
