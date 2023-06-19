@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import re
 import math
+import requests
 
 load_dotenv()
 logfile_path = os.getenv("LOGFILE_PATH")
@@ -12,9 +13,8 @@ startdate = os.getenv("START_DATE") # this is if you want a specific date to sta
 diceRolePattern = re.compile(r'\[[a-z]\d+(?:\+\d+)? = (\d+)', re.IGNORECASE)
 
 def parse_chatlog():
-    file_path = logfile_path
-    with open(file_path, 'r') as f:
-        html_content = f.read()
+    response = requests.get(logfile_path).text
+    html_content = response
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -108,7 +108,7 @@ def count_player_criticalhits(playerName):
 #     print("Average Initiative:", average)
 
 # if __name__ == "__main__":
-#     player_name = "YOUR_PLAYER"  # Replace "Your Player Name" with the actual player name
+#     player_name = "YOUR_PLAYER_NAME"  # Replace "Your Player Name" with the actual player name
 #     count, average = count_player_attacks(player_name)
 #     print("Attack Count:", count)
 #     print("Average Attack Roll:", average)
