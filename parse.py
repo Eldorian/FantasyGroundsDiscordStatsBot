@@ -9,6 +9,8 @@ load_dotenv()
 logfile_path = os.getenv("LOGFILE_PATH")
 startdate = os.getenv("START_DATE") # this is if you want a specific date to start parsing from
 
+diceRolePattern = re.compile(r'\[[a-z]\d+(?:\+\d+)? = (\d+)', re.IGNORECASE)
+
 def parse_chatlog():
     file_path = logfile_path
     with open(file_path, 'r') as f:
@@ -39,32 +41,35 @@ def parse_chatlog():
 
 
 def count_player_attacks(playerName):
-    counter = 0
+    attack_count = 0
+    total_attack = 0
 
-    soup = parse_chatlog()
+    parsed_text = parse_chatlog()
 
-    attack_lines = soup.find_all('font', color='#FDFDFD')
+    for line in parsed_text.splitlines():
+        if re.search(r'<font color="#FDFDFD">{}: \[ATTACK '.format(re.escape(playerName)), line, re.IGNORECASE):
+            match = diceRolePattern.search(line)
+            if match:
+                attack_value = match.group(1)
+                if is_valid_roll(attack_value):
+                    attack_count += 1
+                    total_attack += int(attack_value)
+    average_attack = total_attack / attack_count if attack_count > 0 else 0
+    average_attack = math.floor(average_attack)
 
-    for line in attack_lines:
-        text = line.get_text()
-        if playerName in text and "[ATTACK" in text:
-            counter += 1
-
-    return counter
+    return attack_count, average_attack
 
 def count_player_initiatives(playerName):
     initiative_count = 0
     total_initiative = 0
-
-    pattern = re.compile(r'\[[a-z]\d+(?:\+\d+)? = (\d+)', re.IGNORECASE)
     
     parsed_text = parse_chatlog()
     for line in parsed_text.splitlines():
         if re.search(r'<font color="#FDFDFD">{}: \[INIT\]'.format(re.escape(playerName)), line, re.IGNORECASE):
-            match = pattern.search(line)
+            match = diceRolePattern.search(line)
             if match:
                 initiative_value = match.group(1)
-                if is_valid_initiative(initiative_value):
+                if is_valid_roll(initiative_value):
                     initiative_count += 1
                     total_initiative += int(initiative_value)
     average_initiative = total_initiative / initiative_count if initiative_count > 0 else 0
@@ -72,10 +77,10 @@ def count_player_initiatives(playerName):
 
     return initiative_count, average_initiative
 
-def is_valid_initiative(initiative_value):
+def is_valid_roll(value):
     try:
-        initiative = int(initiative_value)
-        if initiative >= 1: 
+        roll = int(value)
+        if roll >= 1: 
             return True
     except ValueError:
         pass
@@ -101,3 +106,9 @@ def count_player_criticalhits(playerName):
 #     count, average = count_player_initiatives(player_name)
 #     print("Initiative Count:", count)
 #     print("Average Initiative:", average)
+
+if __name__ == "__main__":
+    player_name = "brynlin"  # Replace "Your Player Name" with the actual player name
+    count, average = count_player_attacks(player_name)
+    print("Attack Count:", count)
+    print("Average Attack Roll:", average)
