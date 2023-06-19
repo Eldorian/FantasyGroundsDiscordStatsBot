@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 import re
@@ -6,17 +7,33 @@ import math
 
 load_dotenv()
 logfile_path = os.getenv("LOGFILE_PATH")
-
-logfile_path = logfile_path
+startdate = os.getenv("START_DATE") # this is if you want a specific date to start parsing from
 
 def parse_chatlog():
     file_path = logfile_path
     with open(file_path, 'r') as f:
         html_content = f.read()
-    
-    soup = BeautifulSoup(html_content, 'html.parser')
 
-    return soup
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # Find all the <a> tags that represent session start dates
+    session_start_tags = soup.find_all('a', {'name': True})
+    
+    # Find the session start date that matches or is closest to the specified start_date
+    target_date = datetime.strptime(startdate, '%Y-%m-%d')
+    closest_date = min(session_start_tags, key=lambda tag: abs(datetime.strptime(tag['name'], '%Y-%m-%d') - target_date))['name']
+    
+    # Find the next sibling of the closest date tag and extract its content along with all the following siblings
+    log_content = []
+    log_tag = soup.find('a', {'name': closest_date}).find_next_sibling()
+    while log_tag:
+        log_content.append(str(log_tag))
+        log_tag = log_tag.find_next_sibling()
+    
+    parsed_content = ''.join(log_content)
+    parsed_soup = BeautifulSoup(parsed_content, 'html.parser')
+
+    return parsed_soup
 
 
 def count_player_attacks(playerName):
@@ -50,6 +67,7 @@ def count_player_initiatives(playerName):
                         total_initiative += int(initiative_value)
     average_initiative = total_initiative / initiative_count if initiative_count > 0 else 0
     average_initiative = math.floor(average_initiative)
+
     return initiative_count, average_initiative
 
 def is_valid_initiative(initiative_value):
