@@ -17,7 +17,7 @@ def parse_chatlog():
     soup = BeautifulSoup(html_content, 'html.parser')
 
     # Find the session start tag that matches or is closest to the specified date
-    target_date = datetime.strptime("2022-06-30", '%Y-%m-%d')
+    target_date = datetime.strptime(startdate, '%Y-%m-%d')
     session_start_tags = soup.find_all('a', {'name': True})
     closest_date_tag = None
     for tag in session_start_tags:
