@@ -107,8 +107,8 @@ def count_player_criticalhits(playerName):
 #     print("Initiative Count:", count)
 #     print("Average Initiative:", average)
 
-if __name__ == "__main__":
-    player_name = "brynlin"  # Replace "Your Player Name" with the actual player name
-    count, average = count_player_attacks(player_name)
-    print("Attack Count:", count)
-    print("Average Attack Roll:", average)
+# if __name__ == "__main__":
+#     player_name = "YOUR_PLAYER"  # Replace "Your Player Name" with the actual player name
+#     count, average = count_player_attacks(player_name)
+#     print("Attack Count:", count)
+#     print("Average Attack Roll:", average)
