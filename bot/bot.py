@@ -5,8 +5,9 @@ from discord import app_commands
 from parse import *
 
 load_dotenv()
-token = os.getenv("DISCORD_TOKEN")
-guiildId = os.getenv("DISCORD_GUILD")
+
+token = os.environ.get("DISCORD_TOKEN")
+guiildId = os.environ.get("DISCORD_GUILD")
 
 MY_GUILD = discord.Object(id=guiildId)
 
