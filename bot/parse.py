@@ -40,25 +40,37 @@ def parse_chatlog():
 
     return parsed_html
 
-
-def count_player_attacks(playerName):
+def count_player_attack_outcomes(playerName):
     attack_count = 0
+    hit_count = 0
+    miss_count = 0
     total_attack = 0
 
     parsed_text = parse_chatlog()
+    lines = parsed_text.splitlines()
 
-    for line in parsed_text.splitlines():
-        if re.search(r'<font color="#FDFDFD">{}: \[ATTACK '.format(re.escape(playerName)), line, re.IGNORECASE):
-            match = diceRolePattern.search(line)
+    i = 0
+    while i < len(lines):
+        if re.search(r'<font color="#FDFDFD">{}: \[ATTACK '.format(re.escape(playerName)), lines[i], re.IGNORECASE):
+            match = diceRolePattern.search(lines[i])
             if match:
                 attack_value = match.group(1)
                 if is_valid_roll(attack_value):
-                    attack_count += 1
                     total_attack += int(attack_value)
+            attack_count += 1
+
+            if i+1 < len(lines):
+                if "[HIT]" in lines[i+1]:
+                    hit_count += 1
+                    i += 1
+                elif "[MISS]" in lines[i+1]:
+                    miss_count += 1
+                    i += 1
+        i += 1
     average_attack = total_attack / attack_count if attack_count > 0 else 0
     average_attack = math.floor(average_attack)
 
-    return attack_count, average_attack
+    return attack_count, hit_count, miss_count, average_attack
 
 def count_player_initiatives(playerName):
     initiative_count = 0
@@ -108,8 +120,10 @@ def count_player_criticalhits(playerName):
 #     print("Initiative Count:", count)
 #     print("Average Initiative:", average)
 
-# if __name__ == "__main__":
-#     player_name = "YOUR_PLAYER_NAME"  # Replace "Your Player Name" with the actual player name
-#     count, average = count_player_attacks(player_name)
-#     print("Attack Count:", count)
-#     print("Average Attack Roll:", average)
+if __name__ == "__main__":
+    player_name = "brynlin"  # Replace "Your Player Name" with the actual player name
+    count, hit_count, miss_count, average = count_player_attack_outcomes(player_name)
+    print("Attack Count:", count)
+    print("Average Attack Roll:", average)
+    print("Hits: ", hit_count)
+    print("Misses: ", miss_count)

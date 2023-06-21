@@ -33,8 +33,8 @@ async def on_ready():
 @app_commands.describe(playerName="The name of the player to get the attacks of.")
 async def attacks(interaction: discord.Interaction, playerName: str):
     """Gives stats of the player inputted"""
-    attacksCount, averageRoll = count_player_attacks(playerName)
-    await interaction.response.send_message(f"{playerName} has made {attacksCount} total attacks. They have an average attack roll of {averageRoll}.")
+    attacksCount, hitCount, missCount, averageRoll = count_player_attack_outcomes(playerName)
+    await interaction.response.send_message(f"{playerName} has made {attacksCount} total attacks. They have an average attack roll of {averageRoll}. They have hit {hitCount} times and missed {missCount} times. NOTE: Hits and Misses are only counted if rolled against a target")
 
 @client.tree.command()
 @app_commands.rename(playerName='text')
