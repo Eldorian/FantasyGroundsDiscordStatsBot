@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from datetime import datetime
+from collections import Counter
+from html.parser import HTMLParser
 import os
 import re
 import math
@@ -72,6 +74,41 @@ def count_player_attack_outcomes(playerName):
 
     return attack_count, hit_count, miss_count, average_attack
 
+class SpellNameParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.spell_names = []
+
+    def handle_data(self, data):
+        self.spell_names.append(data.strip())
+
+def track_player_spell_casts(playerName):
+    spell_casts = []
+    parsed_text = parse_chatlog()
+    lines = parsed_text.splitlines()
+
+    spell_parser = SpellNameParser()
+
+    for line in lines:
+        if re.search(r'<font color="#FDFDFD">{}: \[CAST\] ([^\[\]]+)'.format(re.escape(playerName)), line, re.IGNORECASE):
+            match = re.search(r'<font color="#FDFDFD">{}: \[CAST\] ([^\[\]]+)'.format(re.escape(playerName)), line, re.IGNORECASE)
+            if match:
+                spell = match.group(1).strip()
+                spell_parser.feed(spell)
+        elif re.search(r'<font color="#FDFDFD">{}: \[DAMAGE\] ([^\[\]]+)'.format(re.escape(playerName)), line, re.IGNORECASE):
+            match = re.search(r'<font color="#FDFDFD">{}: \[DAMAGE\] ([^\[\]]+)'.format(re.escape(playerName)), line, re.IGNORECASE)
+            if match:
+                spell = match.group(1).strip()
+                spell_parser.feed(spell)
+
+    total_casts = spell_parser.spell_names.count('') + len(spell_parser.spell_names)
+    unique_spells = list(set(spell_parser.spell_names))
+    unique_spells = [spell for spell in unique_spells if spell != '']
+    spell_counts = Counter(spell_parser.spell_names)
+    most_cast_spell = spell_counts.most_common(1)[0][0] if spell_counts else None
+
+    return total_casts, unique_spells, most_cast_spell
+
 def count_player_initiatives(playerName):
     initiative_count = 0
     total_initiative = 0
@@ -120,10 +157,10 @@ def count_player_criticalhits(playerName):
 #     print("Initiative Count:", count)
 #     print("Average Initiative:", average)
 
-if __name__ == "__main__":
-    player_name = "brynlin"  # Replace "Your Player Name" with the actual player name
-    count, hit_count, miss_count, average = count_player_attack_outcomes(player_name)
-    print("Attack Count:", count)
-    print("Average Attack Roll:", average)
-    print("Hits: ", hit_count)
-    print("Misses: ", miss_count)
+# if __name__ == "__main__":
+#     player_name = "PLAYER_NAME"  # Replace "Your Player Name" with the actual player name
+#     count, hit_count, miss_count, average = count_player_attack_outcomes(player_name)
+#     print("Attack Count:", count)
+#     print("Average Attack Roll:", average)
+#     print("Hits: ", hit_count)
+#     print("Misses: ", miss_count)

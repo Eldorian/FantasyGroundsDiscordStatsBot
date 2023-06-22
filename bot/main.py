@@ -52,4 +52,12 @@ async def criticalhits(interaction: discord.Interaction, playerName: str):
     actions_count = count_player_criticalhits(playerName)
     await interaction.response.send_message(f"{playerName} has rolled {actions_count} critical hits.")
 
+@client.tree.command()
+@app_commands.rename(playerName='text')
+@app_commands.describe(playerName="The name of the player to get the spells of.")
+async def castspells(interaction: discord.Interaction, playerName: str):
+    """Gives stats of the player inputted"""
+    total_casts, unique_spells, most_cast_spell = track_player_spell_casts(playerName)
+    await interaction.response.send_message(f"{playerName} has cast a spell {total_casts} times. They have cast these following spells {unique_spells}. Their most popular spell is {most_cast_spell}.")
+
 client.run(token)
