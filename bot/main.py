@@ -6,8 +6,8 @@ from parse import *
 
 load_dotenv()
 
-token = os.environ.get("DISCORD_TOKEN")
-guiildId = os.environ.get("DISCORD_GUILD")
+token = os.getenv("DISCORD_TOKEN")
+guiildId = os.getenv("DISCORD_GUILD")
 
 MY_GUILD = discord.Object(id=guiildId)
 

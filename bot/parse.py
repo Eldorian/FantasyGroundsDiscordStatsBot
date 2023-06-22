@@ -10,8 +10,8 @@ import requests
 
 load_dotenv()
 
-logfile_path = os.environ.get("LOGFILE_PATH")
-startdate = os.environ.get("START_DATE") # this is if you want a specific date to start parsing from
+logfile_path = os.getenv("LOGFILE_PATH")
+startdate = os.getenv("START_DATE") # this is if you want a specific date to start parsing from
 
 diceRolePattern = re.compile(r'\[[a-z]\d+(?:\+\d+)? = (\d+)', re.IGNORECASE)
 
