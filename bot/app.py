@@ -1,10 +1,12 @@
 from flask import Flask
 from main import client
+import sys
 import logging
 
 app = Flask(__name__)
 app.debug = True
-logging.basicConfig(level=logging.INFO)
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.DEBUG)
 
 @app.route("/", methods=["GET","POST"])
 def index():
