@@ -8,7 +8,7 @@ app.debug = True
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
 
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["POST"])
 def index():
     logging.debug("index")
     return client.main()
