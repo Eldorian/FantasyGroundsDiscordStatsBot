@@ -53,6 +53,11 @@ jobs:
         with:
           name: python-app
           path: .
+
+      - name: List files in artifact
+        run: |
+          ls ${{ github.workspace }}
+          ls ${{ github.workspace }}/venv
           
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
