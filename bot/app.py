@@ -1,12 +1,11 @@
-from flask import Flask, request
+from flask import Flask
 from main import client
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET","POST"])
 def index():
-    req = request
-    return client.main(req)
+    return client.main()
 
 if __name__ == "__main__":
-    app.main()
+    app.run()
