@@ -8,8 +8,12 @@ app.debug = True
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
 
-@app.route("/", methods=["POST"])
+@app.route("/")
 def index():
+    return "Hello, Azure!"
+
+@app.route("/api", methods=["POST"])
+def api():
     logging.debug("index")
     return client.main()
 
