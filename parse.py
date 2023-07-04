@@ -15,9 +15,11 @@ startdate = os.getenv("START_DATE") # this is if you want a specific date to sta
 
 diceRolePattern = re.compile(r'\[[a-z]\d+(?:\+\d+)? = (\d+)', re.IGNORECASE)
 
+file_path = os.path.join(os.getcwd(), logfile_path)
+
 def parse_chatlog():
-    response = requests.get(logfile_path).text
-    html_content = response
+    with open(file_path, 'r') as file:
+        html_content = file.read()
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
