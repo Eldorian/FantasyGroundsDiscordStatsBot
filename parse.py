@@ -6,7 +6,6 @@ from html.parser import HTMLParser
 import os
 import re
 import math
-import requests
 
 load_dotenv()
 
