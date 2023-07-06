@@ -138,18 +138,18 @@ def is_valid_roll(value):
     return False
 
 def count_player_criticalhits(playerName):
-    counter = 0
+    actions_count = 0
 
-    soup = parse_chatlog()
+    parsed_text = parse_chatlog()
 
-    attack_lines = soup.find_all('font', color='#FDFDFD')
+    pattern = r'<font color="#FDFDFD">.*{}.*\[CRITICAL\].*<\/font>'.format(re.escape(playerName))
+    regex = re.compile(pattern, re.IGNORECASE)
 
-    for line in attack_lines:
-        text = line.get_text()
-        if playerName in text and "[CRITICAL" in text:
-            counter += 1
+    for line in parsed_text.splitlines():
+        if regex.search(line):
+            actions_count += 1
 
-    return counter
+    return actions_count
 
 # below code is if I want to run this file directly
 # if __name__ == "__main__":

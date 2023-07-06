@@ -32,32 +32,51 @@ async def on_ready():
 @app_commands.rename(playerName='text')
 @app_commands.describe(playerName="The name of the player to get the attacks of.")
 async def attacks(interaction: discord.Interaction, playerName: str):
-    """Gives stats of the player inputted"""
     attacksCount, hitCount, missCount, averageRoll = count_player_attack_outcomes(playerName)
-    await interaction.response.send_message(f"{playerName} has made {attacksCount} total attacks. They have an average attack roll of {averageRoll}. They have hit {hitCount} times and missed {missCount} times. NOTE: Hits and Misses are only counted if rolled against a target")
+
+    embed = discord.Embed(title=f"{playerName} Combat Attack Statistics", color=discord.Color.blue())
+    embed.add_field(name="Total Attacks", value=str(attacksCount), inline=False)
+    embed.add_field(name="Average Attack Roll", value=str(averageRoll), inline=False)
+    embed.add_field(name="Total Hits", value=str(hitCount), inline=False)
+    embed.add_field(name="Total Misses", value=str(missCount), inline=False)
+    await interaction.response.send_message(embed = embed)
 
 @client.tree.command()
 @app_commands.rename(playerName='text')
-@app_commands.describe(playerName="The name of the player to get the attacks of.")
+@app_commands.describe(playerName="The name of the player to get the initiative roll of.")
 async def initiative(interaction: discord.Interaction, playerName: str):
-    """Gives stats of the player inputted"""
     actions_count, average_init = count_player_initiatives(playerName)
-    await interaction.response.send_message(f"{playerName} has rolled initiave {actions_count} total times. They have an average initiative roll of {average_init}.")
+
+    embed = discord.Embed(title=f"{playerName} Initiative Statistics", color=discord.Color.blue())
+    embed.add_field(name="Total Initiative Rolls", value=str(actions_count), inline=False)
+    embed.add_field(name="Average Roll", value=str(average_init), inline=False)
+
+    await interaction.response.send_message(embed = embed)
 
 @client.tree.command()
 @app_commands.rename(playerName='text')
 @app_commands.describe(playerName="The name of the player to get the attacks of.")
 async def criticalhits(interaction: discord.Interaction, playerName: str):
-    """Gives stats of the player inputted"""
     actions_count = count_player_criticalhits(playerName)
-    await interaction.response.send_message(f"{playerName} has rolled {actions_count} critical hits.")
+
+    embed = discord.Embed(title=f"{playerName} Critical Hits Statistics", color=discord.Color.blue())
+    embed.add_field(name="Total Critical Hits", value=str(actions_count), inline=False)
+
+    await interaction.response.send_message(embed = embed)
 
 @client.tree.command()
 @app_commands.rename(playerName='text')
 @app_commands.describe(playerName="The name of the player to get the spells of.")
 async def castspells(interaction: discord.Interaction, playerName: str):
-    """Gives stats of the player inputted"""
     total_casts, unique_spells, most_cast_spell = track_player_spell_casts(playerName)
-    await interaction.response.send_message(f"{playerName} has cast a spell {total_casts} times. They have cast these following spells {unique_spells}. Their most popular spell is {most_cast_spell}.")
+
+    embed = discord.Embed(title=f"{playerName} Spell Statistics", color=discord.Color.blue())
+    embed.add_field(name="Total Casts", value=str(total_casts), inline=False)
+
+    spell_list = "\n".join(f"- {spell}" for spell in unique_spells)
+    embed.add_field(name="List of Cast Spells", value=spell_list, inline=False)
+    embed.add_field(name="Most Popular Spell", value=most_cast_spell, inline=False)
+
+    await interaction.response.send_message(embed = embed)
 
 client.run(token)
