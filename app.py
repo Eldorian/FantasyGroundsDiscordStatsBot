@@ -95,4 +95,16 @@ async def soulsstolen(interaction: discord.Interaction, playerName: str):
 
     await interaction.response.send_message(embed=embed)
 
+@client.tree.command()
+@app_commands.rename(playerName='text')
+@app_commands.describe(playerName="The name of the player to get a kill count")
+async def kills(interaction: discord.Interaction, playerName: str):
+    kills = kill_count(playerName)
+    total_kills = sum(kills.values())
+
+    embed = discord.Embed(title=f"{playerName} Kills Count", color=discord.Color.red())
+    embed.add_field(name="Total Kills", value=str(total_kills), inline=False)
+
+    await interaction.response.send_message(embed=embed)
+
 client.run(token)

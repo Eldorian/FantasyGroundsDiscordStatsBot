@@ -121,7 +121,7 @@ def count_player_initiatives(playerName):
             if playerName.lower() == 'brynlin' and match_counter < 26:
                 match_counter += 1
                 continue
-            
+
             match = diceRolePattern.search(line)
             if match:
                 initiative_value = match.group(1)
@@ -181,6 +181,28 @@ def souls_stolen(playerName):
 
     return kills
 
+def kill_count(playerName):
+    is_player_turn = False
+    kills = {}
+
+    parsed_text = parse_chatlog()
+    lines = parsed_text.splitlines()
+
+    for line in lines:
+        if line.startswith("<font color=\"#000000\">[TURN]"):
+            is_player_turn = playerName in line
+
+        if is_player_turn and "[STATUS: Dying]" in line:
+            match = re.search(r'\[to ([^\]]+)\]', line)
+            if match:
+                victim = match.group(1)
+                if victim in kills:
+                    kills[victim] += 1
+                else:
+                    kills[victim] = 1
+
+    return kills
+
 # below code is if I want to run this file directly
 # if __name__ == "__main__":
 #     player_name = "PLAYER_NAME"  # Replace "Your Player Name" with the actual player name
@@ -199,4 +221,9 @@ def souls_stolen(playerName):
 # if __name__ == "__main__":
 #     player_name = "Brynlin"  # Replace "Your Player Name" with the actual player name
 #     kills = souls_stolen(player_name)
+#     print("kills", kills)
+
+# if __name__ == "__main__":
+#     player_name = "Brynlin"  # Replace "Your Player Name" with the actual player name
+#     kills = kill_count(player_name)
 #     print("kills", kills)
