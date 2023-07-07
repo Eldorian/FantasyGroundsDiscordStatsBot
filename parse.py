@@ -113,10 +113,15 @@ def track_player_spell_casts(playerName):
 def count_player_initiatives(playerName):
     initiative_count = 0
     total_initiative = 0
+    match_counter = 0
     
     parsed_text = parse_chatlog()
     for line in parsed_text.splitlines():
         if re.search(r'<font color="#FDFDFD">{}: \[INIT\]'.format(re.escape(playerName)), line, re.IGNORECASE):
+            if playerName.lower() == 'brynlin' and match_counter < 26:
+                match_counter += 1
+                continue
+            
             match = diceRolePattern.search(line)
             if match:
                 initiative_value = match.group(1)
