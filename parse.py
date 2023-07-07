@@ -190,7 +190,7 @@ def kill_count(playerName):
 
     for line in lines:
         if line.startswith("<font color=\"#000000\">[TURN]"):
-            is_player_turn = playerName in line
+            is_player_turn = playerName.lower() in line.lower()
 
         if is_player_turn and "[STATUS: Dying]" in line:
             match = re.search(r'\[to ([^\]]+)\]', line)
