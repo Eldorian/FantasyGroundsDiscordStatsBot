@@ -151,6 +151,31 @@ def count_player_criticalhits(playerName):
 
     return actions_count
 
+def souls_stolen(playerName):
+    is_player_turn = False
+    kills = {}
+
+    parsed_text = parse_chatlog()
+    lines = parsed_text.splitlines()
+
+    for line in lines:
+        if line.startswith("<font color=\"#000000\">[TURN]"):
+            is_player_turn = playerName in line
+
+        if is_player_turn and "Void Knife" in line and "[STATUS: Dying]" in line:
+            match = re.search(r'\[to ([^\]]+)\]', line)
+            if match:
+                victim = match.group(1)
+                if victim in kills:
+                    kills[victim] += 1
+                else:
+                    kills[victim] = 1
+    
+    if playerName.lower() == "brynlin" and "Valrak" not in kills:
+        kills["Valrak"] = 1
+
+    return kills
+
 # below code is if I want to run this file directly
 # if __name__ == "__main__":
 #     player_name = "PLAYER_NAME"  # Replace "Your Player Name" with the actual player name
@@ -165,3 +190,8 @@ def count_player_criticalhits(playerName):
 #     print("Average Attack Roll:", average)
 #     print("Hits: ", hit_count)
 #     print("Misses: ", miss_count)
+
+# if __name__ == "__main__":
+#     player_name = "Brynlin"  # Replace "Your Player Name" with the actual player name
+#     kills = souls_stolen(player_name)
+#     print("kills", kills)

@@ -79,4 +79,20 @@ async def castspells(interaction: discord.Interaction, playerName: str):
 
     await interaction.response.send_message(embed = embed)
 
+@client.tree.command()
+@app_commands.rename(playerName='text')
+@app_commands.describe(playerName="The name of the player to Souls Stolen")
+async def soulsstolen(interaction: discord.Interaction, playerName: str):
+    kills = souls_stolen(playerName)
+    total_kills = sum(kills.values())
+
+    embed = discord.Embed(title=f"{playerName} Souls Stolen Statistics", color=discord.Color.red())
+    embed.add_field(name="Total Souls Stolen", value=str(total_kills), inline=False)
+
+    victim_list = "\n".join(f"- {victim}" for victim, count in kills.items())
+    embed.add_field(name="Victims", value=victim_list, inline=False)
+    embed.set_thumbnail(url="https://i.imgur.com/Msz83qU.png")
+
+    await interaction.response.send_message(embed=embed)
+
 client.run(token)
